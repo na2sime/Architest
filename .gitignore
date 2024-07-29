@@ -1,5 +1,15 @@
 .idea
 
+EndMcSpigotPlugin/.idea
+EndMcSpigotPlugin/*.iws
+EndMcSpigotPlugin/*.iml
+EndMcSpigotPlugin/*.ipr
+EndMcSpigotPlugin/.gradle
+EndMcSpigotPlugin/build/
+EndMcSpigotPlugin/!gradle/wrapper/gradle-wrapper.jar
+EndMcSpigotPlugin/!**/src/main/**/build/
+EndMcSpigotPlugin/!**/src/test/**/build/
+
 EndMcWebAPI/HELP.md
 EndMcWebAPI/.gradle
 EndMcWebAPI/build/
