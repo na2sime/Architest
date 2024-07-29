@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=endmc
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/data/db
+  api:
+    depends_on:
+      - mongodb
+    build: ./EndMcWebAPI
+    container_name: api
+    environment:
+      - spring.data.mongodb.uri=mongodb://mongodb:27017
+      - spring.data.mongodb.database=endmc
+    ports:
+      - "4000:4000"
+    links:
+      - mongodb
+
+volumes:
+  mongodbdata:

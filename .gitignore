@@ -1,0 +1,39 @@
+.idea
+
+EndMcWebAPI/HELP.md
+EndMcWebAPI/.gradle
+EndMcWebAPI/build/
+EndMcWebAPI/!gradle/wrapper/gradle-wrapper.jar
+EndMcWebAPI/!**/src/main/**/build/
+EndMcWebAPI/!**/src/test/**/build/
+
+### STS ###
+EndMcWebAPI/.apt_generated
+EndMcWebAPI/.classpath
+EndMcWebAPI/.factorypath
+EndMcWebAPI/.project
+EndMcWebAPI/.settings
+EndMcWebAPI/.springBeans
+EndMcWebAPI/.sts4-cache
+EndMcWebAPI/bin/
+EndMcWebAPI/!**/src/main/**/bin/
+EndMcWebAPI/!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+EndMcWebAPI/.idea
+EndMcWebAPI/*.iws
+EndMcWebAPI/*.iml
+EndMcWebAPI/*.ipr
+EndMcWebAPI/out/
+EndMcWebAPI/!**/src/main/**/out/
+EndMcWebAPI/!**/src/test/**/out/
+
+### NetBeans ###
+EndMcWebAPI/nbproject/private/
+EndMcWebAPI/nbbuild/
+EndMcWebAPI/dist/
+EndMcWebAPI/nbdist/
+EndMcWebAPI/.nb-gradle/
+
+### VS Code ###
+EndMcWebAPI/.vscode/
