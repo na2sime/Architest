@@ -1,4 +1,4 @@
-package fr.nassime.endmc.api;
+package fr.nassime.endmc.api.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

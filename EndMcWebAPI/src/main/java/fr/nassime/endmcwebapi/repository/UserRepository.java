@@ -8,6 +8,4 @@ import java.util.UUID;
 public interface UserRepository extends MongoRepository<User, UUID> {
     User findByName(String name);
     User findByUuid(UUID uuid);
-
-    boolean existsByUuid(UUID uuid);
 }

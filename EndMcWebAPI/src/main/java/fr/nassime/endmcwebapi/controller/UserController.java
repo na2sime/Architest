@@ -2,6 +2,7 @@ package fr.nassime.endmcwebapi.controller;
 
 import fr.nassime.endmcwebapi.api.User;
 import fr.nassime.endmcwebapi.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -19,46 +20,34 @@ public class UserController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public void createUser(@RequestParam UUID uuid, @RequestParam String name, @RequestParam Integer coins) {
         userService.createUser(uuid, name, coins);
     }
 
     @GetMapping
-    public List<User> getUser(@RequestParam(required = false) String name, @RequestParam(required = false) UUID uuid) {
+    @ResponseStatus(HttpStatus.OK)
+    public User getUser(@RequestParam(required = false) String name, @RequestParam(required = false) UUID uuid) {
         if (name != null) {
             if (userService.getUserByName(name) == null) {
                 throw new RuntimeException("User not found");
             }
-            return Collections.singletonList(userService.getUserByName(name));
+            return userService.getUserByName(name);
         } else if (uuid != null) {
             if (userService.getUserByUUID(uuid) == null) {
                 throw new RuntimeException("User not found");
             }
-            return Collections.singletonList(userService.getUserByUUID(uuid));
-        } else {
-            return userService.findAll();
+            return userService.getUserByUUID(uuid);
         }
+        return null;
     }
 
-    @GetMapping("/exists/uuid")
-    public boolean existsUserByUUID(@RequestParam UUID uuid) {
-        return userService.existsUserByUuid(uuid);
-    }
-
-    @PatchMapping("/uuid")
-    public void updateUserByUuid(@RequestParam UUID uuid, @RequestBody User user) {
+    @PatchMapping()
+    public void updateUserByName(@RequestParam UUID uuid, @RequestBody User user) {
         if (userService.getUserByUUID(uuid) == null) {
             throw new RuntimeException("User not found");
         }
         userService.updateUserByUuid(uuid, user);
-    }
-
-    @PatchMapping("/name")
-    public void updateUserByName(@RequestParam String name, @RequestBody User user) {
-        if (userService.getUserByName(name) == null) {
-            throw new RuntimeException("User not found");
-        }
-        userService.updateUserByName(name, user);
     }
 
 }

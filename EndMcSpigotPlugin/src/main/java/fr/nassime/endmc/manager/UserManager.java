@@ -1,49 +1,76 @@
 package fr.nassime.endmc.manager;
 
 import fr.nassime.endmc.EndMc;
-import fr.nassime.endmc.api.User;
-import org.bukkit.Bukkit;
+import fr.nassime.endmc.api.user.User;
+import lombok.Getter;
+import org.bukkit.entity.Player;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
+@Getter
 public class UserManager {
 
     private final Map<UUID, User> users = new HashMap<>();
     private static UserManager instance;
-
-    private static final String API_USER = "user";
-    private static final String API_PASSWORD = "password";
+    private final EndMc plugin = EndMc.get();
 
     public UserManager() {
         instance = this;
     }
 
-    public void loadUser(UUID uuid) {
-        Bukkit.getScheduler().runTaskAsynchronously(EndMc.get(), () -> {
-            try {
-                URL url = new URL("http://localhost:4000/user");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                String userCredentials = API_USER + ":" + API_PASSWORD;
-                String basicAuth = "Basic " + new String(
-                        java.util.Base64.getEncoder().encode(userCredentials.getBytes()));
+    public void handleJoin(Player player) {
+        loadUser(player);
+    }
 
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Authorization", basicAuth);
+    public void handleQuit(Player player) {
+        saveUser(player.getUniqueId());
+        removeUser(player.getUniqueId());
+    }
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                User user = EndMc.get().getGson().fromJson(reader, User.class);
-                users.put(uuid, user);
-                reader.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+    public void saveUser(UUID uuid) {
+        User user = users.get(uuid);
+        updateUser(user).whenComplete((updatedUser, error) -> {
+            if (error != null) {
+                return;
             }
+            users.put(uuid, updatedUser);
         });
+    }
+
+    private void loadUser(Player player) {
+        getUserFromWeb(player.getUniqueId()).whenComplete((user, error) -> {
+            if (error != null) {
+                return;
+            }
+            User data = user;
+            if (user == null) {
+                data = new User(player.getUniqueId(), player.getName(), 100);
+                createUser(data);
+            }
+            users.put(player.getUniqueId(), data);
+        });
+    }
+
+    private void createUser(User user) {
+        String data = plugin.getGson().toJson(user);
+
+        plugin.getWebBridge().executeRequest("user",
+                builder -> builder.POST(HttpRequest.BodyPublishers.ofString(data, StandardCharsets.UTF_8)));
+    }
+
+    private CompletableFuture<User> getUserFromWeb(UUID uniqueId) {
+        return plugin.getWebBridge().executeRequest("user/" + uniqueId, HttpRequest.Builder::GET);
+    }
+
+    private CompletableFuture<User> updateUser(User user) {
+        String data = plugin.getGson().toJson(user);
+        return plugin.getWebBridge().executeRequest("user",
+                builder -> builder.method("PATCH", HttpRequest.BodyPublishers.ofString(data, StandardCharsets.UTF_8)));
     }
 
     public User getUser(UUID uuid) {
